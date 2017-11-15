@@ -338,3 +338,6 @@ ehthumbs.db
 *.user
 *.unityproj
 *.booproj
+
+*/GettingStarted.Xamarin
+GettingStarted.Xamarin
