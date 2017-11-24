@@ -1,6 +1,7 @@
 ﻿using Android.App;
 using Android.Content;
 using Android.OS;
+using Android.Views;
 using Android.Widget;
 using SQLite;
 using System;
@@ -36,30 +37,32 @@ namespace BloodPressureApp
             _btnSave.Click += BtnSaveOnClick;
             _btnListAll.Click += BtnListAllOnClick;
 
+            _txtLowVolume.KeyPress += (sender, e) =>
+            {
+                e.Handled = false;
+                if (e.Event.Action == KeyEventActions.Down && e.KeyCode == Keycode.Enter)
+                {
+                    e.Handled = true;
+                    SaveAction();
+                    //add your logic here
+
+                }
+            };
+
             dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "BPdatabase.db3");
 
-            var db = new SQLiteConnection(dbPath);
+            _txtHighVolume.RequestFocus();
+            _txtHighVolume.NextFocusDownId = _txtLowVolume.Id;
 
+
+            var db = new SQLiteConnection(dbPath);
             db.CreateTable<BlodPressureMeasurement>();
         }
 
         private void BtnSaveOnClick(object sender, EventArgs eventArgs)
         {
 
-            string toastMessage = $"Saved: \n  HP: {_txtHighVolume.Text}\n  LB: {_txtLowVolume.Text}";
-
-
-            Toast SaveSuccess = Toast.MakeText(this, toastMessage, ToastLength.Long);
-            SaveSuccess.Show();
-
-            BlodPressureMeasurement BP = new BlodPressureMeasurement();
-            BP.HighValue = _txtHighVolume.Text;
-            BP.LowValue = _txtLowVolume.Text;
-            BP.HeartRate = "55";
-            BP.InsertDate = DateTime.Now;
-            SQLiteConnection db = new SQLiteConnection(dbPath);
-
-            db.Insert(BP);
+            var db = SaveAction();
 
             var table = db.Table<BlodPressureMeasurement>();
 
@@ -69,6 +72,23 @@ namespace BloodPressureApp
             }
             _txtHighVolume.Text = _txtLowVolume.Text = "";
 
+        }
+
+        private SQLiteConnection SaveAction()
+        {
+            string toastMessage = $"Saved: \n  HP: {_txtHighVolume.Text}\n  LB: {_txtLowVolume.Text}";
+
+            Toast SaveSuccess = Toast.MakeText(this, toastMessage, ToastLength.Long);
+            SaveSuccess.Show();
+
+            BlodPressureMeasurement BP = new BlodPressureMeasurement();
+            BP.HighValue = _txtHighVolume.Text;
+            BP.LowValue = _txtLowVolume.Text;
+            BP.InsertDate = DateTime.Now;
+            SQLiteConnection db = new SQLiteConnection(dbPath);
+
+            db.Insert(BP);
+            return db;
         }
 
         private void BtnListAllOnClick(object sender, EventArgs eventArgs)
