@@ -43,7 +43,7 @@ namespace BloodPressureApp
                 if (e.Event.Action == KeyEventActions.Down && e.KeyCode == Keycode.Enter)
                 {
                     e.Handled = true;
-                    SaveAction();
+                    BtnSaveOnClick(sender, e);
                     //add your logic here
 
                 }
@@ -56,7 +56,7 @@ namespace BloodPressureApp
 
 
             var db = new SQLiteConnection(dbPath);
-            db.CreateTable<BlodPressureMeasurement>();
+            db.CreateTable<BloodPressureMeasurement>();
         }
 
         private void BtnSaveOnClick(object sender, EventArgs eventArgs)
@@ -64,8 +64,9 @@ namespace BloodPressureApp
 
             var db = SaveAction();
 
-            var table = db.Table<BlodPressureMeasurement>();
+            var table = db.Table<BloodPressureMeasurement>();
 
+            string result = String.Empty;
             foreach (var item in table)
             {
                 Console.WriteLine(item);
@@ -81,7 +82,7 @@ namespace BloodPressureApp
             Toast SaveSuccess = Toast.MakeText(this, toastMessage, ToastLength.Long);
             SaveSuccess.Show();
 
-            BlodPressureMeasurement BP = new BlodPressureMeasurement();
+            BloodPressureMeasurement BP = new BloodPressureMeasurement();
             BP.HighValue = _txtHighVolume.Text;
             BP.LowValue = _txtLowVolume.Text;
             BP.InsertDate = DateTime.Now;

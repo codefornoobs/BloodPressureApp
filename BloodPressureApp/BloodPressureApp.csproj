@@ -60,7 +60,7 @@
     <Reference Include="Mono.Android" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BlodPressureMeasurement.cs" />
+    <Compile Include="BloodPressureMeasurement.cs" />
     <Compile Include="BloodPressureList.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
