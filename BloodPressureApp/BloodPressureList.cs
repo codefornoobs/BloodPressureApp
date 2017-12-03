@@ -4,6 +4,7 @@ using Android.OS;
 using Android.Widget;
 using SQLite;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Environment = System.Environment;
 
@@ -19,24 +20,34 @@ namespace BloodPressureApp
 
             SetContentView(Resource.Layout.BloodPressureList);
 
-            TextView txtBloodList = FindViewById<TextView>(Resource.Id.textView1);
+            ListView txtBloodList = FindViewById<ListView>(Resource.Id.listView1);
 
-            txtBloodList.Text = RetrieveBloodPressureMeasures();
+            IList<string> data = RetrieveBloodPressureMeasures();
+
+            ArrayAdapter<string> adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, data);
+
+            txtBloodList.Adapter = adapter;
+
+            txtBloodList.LongClick += (sender, args) =>
+            {
+                Console.WriteLine(sender);
+                Console.WriteLine(args);
+            };
 
         }
 
-        private string RetrieveBloodPressureMeasures()
+        private IList<string> RetrieveBloodPressureMeasures()
         {
             string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "BPdatabase.db3");
 
 
             SQLiteConnection db = new SQLiteConnection(dbPath);
             TableQuery<BloodPressureMeasurement> table = db.Table<BloodPressureMeasurement>();
-            string result = string.Empty;
+            IList<string> result = new List<string>();
 
             foreach (BloodPressureMeasurement item in table)
             {
-                result += item + "\n";
+                result.Add(item.ToString());
             }
 
             Console.WriteLine(result);
