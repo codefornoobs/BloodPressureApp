@@ -55,19 +55,20 @@ namespace BloodPressureApp
             _txtHighVolume.NextFocusDownId = _txtLowVolume.Id;
 
 
-            var db = new SQLiteConnection(dbPath);
+            SQLiteConnection db = new SQLiteConnection(dbPath);
             db.CreateTable<BloodPressureMeasurement>();
+            //db.DeleteAll<BloodPressureMeasurement>();
         }
 
         private void BtnSaveOnClick(object sender, EventArgs eventArgs)
         {
 
-            var db = SaveAction();
+            SQLiteConnection db = SaveAction();
 
-            var table = db.Table<BloodPressureMeasurement>();
+            TableQuery<BloodPressureMeasurement> table = db.Table<BloodPressureMeasurement>();
 
             string result = String.Empty;
-            foreach (var item in table)
+            foreach (BloodPressureMeasurement item in table)
             {
                 Console.WriteLine(item);
             }

@@ -19,8 +19,7 @@ namespace BloodPressureApp
         }
         public override string ToString()
         {
-            return string.Format("High Value={0}, Low Value={1}, Inserted Date={2}",
-                 HighValue, LowValue, InsertDate);
+            return string.Format("{0:dddd, d MMMM, yyyy}\n   Blood Pressure\n      Low:  {1}\n      High: {2}", InsertDate, HighValue, LowValue);
         }
     }
 }

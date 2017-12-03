@@ -9,7 +9,7 @@ using Environment = System.Environment;
 
 namespace BloodPressureApp
 {
-    [Activity(Label = "BloodPressureList")]
+    [Activity(Label = "Blood Pressure List")]
     public class BloodPressureList : Activity
     {
 
@@ -27,11 +27,11 @@ namespace BloodPressureApp
 
         private string RetrieveBloodPressureMeasures()
         {
-            var dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "BPdatabase.db3");
+            string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "BPdatabase.db3");
 
 
-            var db = new SQLiteConnection(dbPath);
-            var table = db.Table<BloodPressureMeasurement>();
+            SQLiteConnection db = new SQLiteConnection(dbPath);
+            TableQuery<BloodPressureMeasurement> table = db.Table<BloodPressureMeasurement>();
             string result = string.Empty;
 
             foreach (BloodPressureMeasurement item in table)
