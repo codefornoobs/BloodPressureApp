@@ -13,14 +13,11 @@ namespace BloodPressureApp
     [Activity(Label = "Blood Pressure Save", MainLauncher = true)]
     public class MainActivity : Activity
     {
-        private Button _btnSave,
-            _btnListAll;
-
         private EditText _txtHighVolume,
             _txtLowVolume;
 
 
-        private string dbPath;
+        private string _dbPath;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -28,69 +25,55 @@ namespace BloodPressureApp
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.Main);
 
-            _btnSave = FindViewById<Button>(Resource.Id.btnSave);
-            _btnListAll = FindViewById<Button>(Resource.Id.btnListAll);
-
             _txtHighVolume = FindViewById<EditText>(Resource.Id.txtHighVolume);
             _txtLowVolume = FindViewById<EditText>(Resource.Id.txtLowVolume);
 
-            _btnSave.Click += BtnSaveOnClick;
-            _btnListAll.Click += BtnListAllOnClick;
+            Button btnSave = FindViewById<Button>(Resource.Id.btnSave);
+            Button btnListAll = FindViewById<Button>(Resource.Id.btnListAll);
 
-            _txtLowVolume.KeyPress += (sender, e) =>
-            {
-                e.Handled = false;
-                if (e.Event.Action == KeyEventActions.Down && e.KeyCode == Keycode.Enter)
-                {
-                    e.Handled = true;
-                    BtnSaveOnClick(sender, e);
-                    //add your logic here
+            btnSave.Click += BtnSaveOnClick;
+            btnListAll.Click += BtnListAllOnClick;
 
-                }
-            };
+            _txtLowVolume.KeyPress += TxtLowVolumeOnEnterPress;
 
-            dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "BPdatabase.db3");
+            _dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "BPdatabase.db3");
 
             _txtHighVolume.RequestFocus();
             _txtHighVolume.NextFocusDownId = _txtLowVolume.Id;
 
 
-            SQLiteConnection db = new SQLiteConnection(dbPath);
+            SQLiteConnection db = new SQLiteConnection(_dbPath);
             db.CreateTable<BloodPressureMeasurement>();
             //db.DeleteAll<BloodPressureMeasurement>();
         }
 
-        private void BtnSaveOnClick(object sender, EventArgs eventArgs)
+        private void TxtLowVolumeOnEnterPress(object sender, View.KeyEventArgs eventArgs)
         {
-
-            SQLiteConnection db = SaveAction();
-
-            TableQuery<BloodPressureMeasurement> table = db.Table<BloodPressureMeasurement>();
-
-            string result = String.Empty;
-            foreach (BloodPressureMeasurement item in table)
+            eventArgs.Handled = false;
+            if (eventArgs.Event.Action == KeyEventActions.Down && eventArgs.KeyCode == Keycode.Enter)
             {
-                Console.WriteLine(item);
+                eventArgs.Handled = true;
+                BtnSaveOnClick(sender, eventArgs);
             }
-            _txtHighVolume.Text = _txtLowVolume.Text = "";
 
         }
 
-        private SQLiteConnection SaveAction()
+        private void BtnSaveOnClick(object sender, EventArgs eventArgs)
         {
-            string toastMessage = $"Saved: \n  HP: {_txtHighVolume.Text}\n  LB: {_txtLowVolume.Text}";
+            string toastMessage = $"Saved:\n  LP: {_txtLowVolume.Text}\n  HP: {_txtHighVolume.Text}";
+            MakeToast.Show(this, toastMessage, ToastLength.Long);
 
-            Toast SaveSuccess = Toast.MakeText(this, toastMessage, ToastLength.Long);
-            SaveSuccess.Show();
+            BloodPressureMeasurement newBPvalue = new BloodPressureMeasurement()
+            {
+                HighBloodPressure = _txtHighVolume.Text,
+                LowBloodPressure = _txtLowVolume.Text,
+                InsertDate = DateTime.Now
+            };
 
-            BloodPressureMeasurement BP = new BloodPressureMeasurement();
-            BP.HighValue = _txtHighVolume.Text;
-            BP.LowValue = _txtLowVolume.Text;
-            BP.InsertDate = DateTime.Now;
-            SQLiteConnection db = new SQLiteConnection(dbPath);
+            SQLiteConnection dBConnection = new SQLiteConnection(_dbPath);
+            dBConnection.Insert(newBPvalue);
 
-            db.Insert(BP);
-            return db;
+            _txtHighVolume.Text = _txtLowVolume.Text = "";
         }
 
         private void BtnListAllOnClick(object sender, EventArgs eventArgs)
